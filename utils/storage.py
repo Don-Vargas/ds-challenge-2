@@ -1,9 +1,19 @@
 import os
 import pickle
 
+def path_validate(path):
+    """
+    Si `path` es una carpeta, la crea si no existe.
+    Si `path` es un archivo, crea la carpeta contenedora.
+    """
+    directory = path if os.path.splitext(path)[1] == "" else os.path.dirname(path)
+    if directory:
+        os.makedirs(directory, exist_ok=True)
+
 def load_pickle(path):
     with open(path, 'rb') as f:
         return pickle.load(f)
+    print(f"Objeto cargado en {filepath}")
 
 def save_pickle(obj, filepath):
     """
@@ -22,12 +32,3 @@ def save_pickle(obj, filepath):
         pickle.dump(obj, f)
 
     print(f"Objeto guardado en {filepath}")
-
-def path_validate(path):
-    """
-    Si `path` es una carpeta, la crea si no existe.
-    Si `path` es un archivo, crea la carpeta contenedora.
-    """
-    directory = path if os.path.splitext(path)[1] == "" else os.path.dirname(path)
-    if directory:
-        os.makedirs(directory, exist_ok=True)
