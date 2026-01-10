@@ -24,8 +24,10 @@ jobs:
       with:
         python-version: "3.10"
     - name: Print env vars
+      env:
+        MESSAGE: ${{ vars.MESSAGE }}
       run: |
-        echo ${{MESSAGE}}
+        echo $MESSAGE
         echo "A new tag was created: ${{ github.ref_name }}"
     - name: Install dependencies
       run: |
