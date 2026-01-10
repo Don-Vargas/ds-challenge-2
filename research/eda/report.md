@@ -99,32 +99,46 @@ Variables will be analyzed according to the groups defined above, based on their
 - **Numerical discrete variables** will be evaluated using count distributions and comparative statistics across categories.
 - **The binary target variable** will be assessed for class balance and its relationship with key explanatory variables.
 
-| **Variable Name**   | **Variable Type** | **Preprocessing**                                     |
-|---------------------|------------------ |-------------------------------------------------------|
-| **Identifier Variables** |                |                                                      |
-| row_id              | Identifier         | No preprocessing.                                    |
-| player_id           | Identifier         | No preprocessing.                                    |
-| **Categorical Variables** |               |                                                      |
-| position            | Nominal            | Frequency Encoding,                                  |
-| team                | Nominal            | Frequency Encoding,                                  |
-| opponent            | Nominal            | Frequency Encoding,                                  |
-| game_location       | Nominal            | One-Hot Encoding                                     |
-| **Ordinal Variables**    |                |                                                      |
-| rest_days           | Ordinal            | No preprocessing.                                    |
-| **Continuous Variables** |                |                                                      |
-| minutes_played      | Continuous         | Standardize, Normalize. Bining 7-> Frequency Encoding |
-| fg_pct              | Continuous         | Standardize, Normalize.                              |
-| three_pct           | Continuous         | Standardize, Normalize.                              |
-| ft_pct              | Continuous         | Standardize, Normalize.                              |
-| **Discrete Variables**    |               |                                                      |
-| age                 | Discrete           | Bining 9 -> Frequency Encoding                         |
-| plus_minus          | Discrete           | Normalize                                            |
-| efficiency          | Discrete           | Normalize                                            |
-| points              | Discrete           | Normalize                                            |
-| rebounds            | Discrete           | Bining 6 -> Frequency Encoding                         |
-| assists             | Discrete           | Bining 5 -> Frequency Encoding                         |
-| steals              | Discrete           | One-Hot Encoding                                     |
-| blocks              | Discrete           | One-Hot Encoding                                     |
-| turnovers           | Discrete           | One-Hot Encoding                                     |
-| **Target Variable**     |                 |                                                      |
-| target              | Binary             | No preprocessing.                                    |
+Abbreviations for Preprocessing Methods:
+
+Standardize - Std
+Normalize - Nor
+Binning Standard - Binning Std
+Binning Quantile X - Binning Quant X 
+One-Hot Encoding - OHE
+Frequency Encoding - Freq Enc
+No preprocessing - None
+
+| **Variable Name**   | **Variable** | Unique  | **Data Set** | **Data Set** | **Data Set**| **Data Set** | **Data Set**    | **Data Set**      |
+|                     | **Type**     | Values  | **1**        | **2**        | **3**       | **4**        | **5**           | **6**             |
+|---------------------|--------------|---------|--------------|--------------|-------------|--------------|-----------------|-------------------|
+| **Identifier Variables** |         |         |              |              |             |              |                 |                   |
+| row_id              | Identifier   | 7200    | None         | None         | None        | None         | None            | None              |
+| player_id           | Identifier   | 500     | None         | None         | None        | None         | None            | None              |
+| **Categorical Variables**|         |         |              |              |             |              |                 |                   |
+| position            | Nominal      | 5       | Freq Enc     | Freq Enc     | None        | None         | OHE PCA         | OHE PCA           |
+| team                | Nominal      | 30      | Freq Enc     | Freq Enc     | None        | None         | OHE PCA         | OHE PCA           |
+| opponent            | Nominal      | 30      | Freq Enc     | Freq Enc     | None        | None         | OHE PCA         | OHE PCA           |
+| game_location       | Nominal      | 2       | Freq Enc     | Freq Enc     | None        | None         | OHE PCA         | OHE PCA           |
+| **Ordinal Variables**    |         |         |              |              |             |              |                 |                   |
+| rest_days           | Ordinal      | 6       | Freq Enc     | Freq Enc     | None        | None         | OHE PCA         | OHE PCA           |
+| **Continuous Variables** |         |         |              |              |             |              |                 |                   |
+| minutes_played      | Continuous   | 341     | Std          | Norm         | Bin Std 5   | Bin Quant 5  | OHE Bin Std PCA | OHE Bin Quant PCA |
+| fg_pct              | Continuous   | 344     | Std          | Norm         | Bin Std 8   | Bin Quant 8  | OHE Bin Std PCA | OHE Bin Quant PCA |
+| three_pct           | Continuous   | 431     | Std          | Norm         | Bin Std 5   | Bin Quant 5  | OHE Bin Std PCA | OHE Bin Quant PCA |
+| ft_pct              | Continuous   | 396     | Std          | Norm         | Bin Std 6   | Bin Quant 6  | OHE Bin Std PCA | OHE Bin Quant PCA |
+| **Discrete Variables**   |         |         |              |              |             |              |                 |                   |
+| age                 | Discrete     | 20      | Std          | Norm         | Bin Std 9   | Bin Quant 9  | OHE Bin Std PCA | OHE Bin Quant PCA |
+| plus_minus          | Discrete     | 55      | Std          | Norm         | Bin Std 7   | Bin Quant 7  | OHE Bin Std PCA | OHE Bin Quant PCA |
+| efficiency          | Discrete     | 45      | Std          | Norm         | Bin Std 21  | Bin Quant 21 | OHE Bin Std PCA | OHE Bin Quant PCA |
+| points              | Discrete     | 31      | Std          | Norm         | Bin Std 6   | Bin Quant 6  | OHE Bin Std PCA | OHE Bin Quant PCA |
+| rebounds            | Discrete     | 18      | Std          | Norm         | Bin Std 7   | Bin Quant 7  | OHE Bin Std PCA | OHE Bin Quant PCA |
+| assists             | Discrete     | 14      | Std          | Norm         | Bin Std 4   | Bin Quant 4  | OHE Bin Std PCA | OHE Bin Quant PCA |
+| steals              | Discrete     | 4       | Std          | Norm         | None        | None         | OHE PCA         | OHE PCA           |
+| blocks              | Discrete     | 4       | Std          | Norm         | None        | None         | OHE PCA         | OHE PCA           |
+| turnovers           | Discrete     | 6       | Std          | Norm         | None        | None         | OHE PCA         | OHE PCA           |
+| **Target Variable**      |         |         |              |              |             |              |                 |                   |
+| target              | Binary       | 2       | None         | None         | None        | None         | None            | None              |
+
+
+

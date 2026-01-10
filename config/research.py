@@ -7,6 +7,7 @@ TEST_DATA = 'data/test.csv'
 
 EDA_REPORT_PATH = 'research/eda/tables/'
 EDA_FIGURES_PATH = 'research/eda/figures/'
+EDA_DATASET_PATH = 'research/eda/dataset/'
 
-REGISTRY_MODEL = 'research/model_registry.json'
-REGISTRY_DATASET = 'research/dataset_registry.json'
+REGISTRY_MODEL = 'research/registry/model_registry.json'
+REGISTRY_DATASET = 'research/registry/dataset_registry.json'
