@@ -13,7 +13,7 @@ def path_validate(path):
 def load_pickle(path):
     with open(path, 'rb') as f:
         return pickle.load(f)
-    print(f"Objeto cargado en {filepath}")
+    print(f"Objeto cargado en {path}")
 
 def save_pickle(obj, filepath):
     """
