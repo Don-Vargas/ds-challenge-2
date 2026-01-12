@@ -79,7 +79,7 @@ if __name__ == "__main__":
         logging.info("Feature correlation testing completed.")
 
         logging.info("Calculating feature importance rankings...")
-        feature_importance.ranking_kings(f'{EDA_DATASET_PATH}_{ds_version}')
+        feature_importance.ranking_kings(f'{EDA_DATASET_PATH}_{ds_version}', output_path=EDA_FIGURES_PATH)
         logging.info("Feature importance ranking completed.")
 
         logging.info("Data processing pipeline finished successfully.")
