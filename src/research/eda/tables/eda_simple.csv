@@ -1,0 +1,22 @@
+Column,Type,Unique Values,Missing,% Missing,Min,Max,Mode
+row_id,int64,7200,0,0.0,2.0,8998.0,6318
+player_id,int64,500,0,0.0,1000.0,1499.0,1110
+age,int64,20,0,0.0,19.0,39.0,27
+position,object,5,0,0.0,,,SG
+team,object,30,0,0.0,,,NYK
+opponent,object,30,0,0.0,,,GSW
+minutes_played,float64,341,0,0.0,7.2,43.0,24.0
+points,int64,31,0,0.0,0.0,30.0,13
+rebounds,int64,18,0,0.0,0.0,17.0,5
+assists,int64,14,0,0.0,0.0,13.0,2
+steals,int64,4,0,0.0,0.0,3.0,1
+blocks,int64,4,0,0.0,0.0,3.0,0
+turnovers,int64,6,0,0.0,0.0,5.0,2
+fg_pct,float64,344,0,0.0,30.0,69.7,47.4
+three_pct,float64,431,0,0.0,10.0,60.0,32.9
+ft_pct,float64,396,0,0.0,45.0,95.0,95.0
+plus_minus,int64,55,0,0.0,-26.0,30.0,-2
+efficiency,int64,45,0,0.0,1.0,45.0,23
+game_location,object,2,0,0.0,,,Away
+rest_days,int64,6,0,0.0,0.0,5.0,1
+target,int64,2,0,0.0,0.0,1.0,0
