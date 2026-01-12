@@ -17,7 +17,7 @@ def one_hot_encoding(column_df):
     """
     encoded_df = pd.DataFrame()
     for col in column_df.columns:
-        encoded_col = pd.get_dummies(column_df[col], prefix=col)
+        encoded_col = pd.get_dummies(column_df[col], prefix=col, drop_first=True)
         encoded_df = pd.concat([encoded_df, encoded_col], axis=1)
     
     return encoded_df
