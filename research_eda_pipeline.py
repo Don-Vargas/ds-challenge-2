@@ -83,7 +83,9 @@ if __name__ == "__main__":
         feature_importance.ranking_kings(f'{EDA_DATASET_PATH}_{ds_version}', output_path=EDA_FIGURES_PATH)
         logging.info("Feature importance ranking completed.")
 
+        logging.info("Generating training datasets...")
         training_dataset_building.dataset_building(f'{EDA_DATASET_PATH}_{ds_version}')
+        logging.info("Datasets generated.")
 
         logging.info("Data processing pipeline finished successfully.")
 

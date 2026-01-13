@@ -37,7 +37,12 @@ def dataset_building(datasets_path):
     for ds in ['_ds1', '_ds2', '_ds3', '_ds4']:
         df = pd.read_csv(f'{datasets_path}{ds}.csv', index_col='row_id')
 
-        X = df.drop(columns=['target', 'player_id'])
+        column_drop = ['target', 'player_id','original_position','original_team', 
+                       'original_opponent', 'original_game_location', 
+                       'original_rest_days', 'original_high_usage_scorer', 
+                       'original_high_eff_min','original_high_eff_scorer']
+        existing_cols = [c for c in column_drop if c in df.columns]
+        X = df.drop(columns=existing_cols)
         X.columns = X.columns.astype(str)
         y = df['target']
         z = df['player_id']
@@ -74,7 +79,7 @@ def dataset_building(datasets_path):
     for datasets, features in feature_configs.items():
         for ds in datasets:
             df = pd.read_csv(f'{datasets_path}{ds}.csv', index_col='row_id')
-            
+
             selected_columns = select_columns(df, features)
             
             # Reduce dataframe

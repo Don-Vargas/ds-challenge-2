@@ -1,12 +1,20 @@
 import pandas as pd
 
-def frequency_encoding(column_df):
+def frequency_encoding_train(column_df):
     """
-    Performs frequency encoding for a given column in a DataFrame.
-    Returns only the new encoded column, not the original one.
+    Performs frequency encoding for a training column.
+    Returns the encoded column and the mapping (frequency dictionary).
     """
     freq = column_df.value_counts() / len(column_df)
     encoded = column_df.map(freq)
+    return encoded, freq.to_dict()
+
+def frequency_encoding_test(column_df, freq_mapping):
+    """
+    Applies frequency encoding to a test column using a mapping from training.
+    Unseen categories are encoded as 0 (or you can choose another value).
+    """
+    encoded = column_df.map(freq_mapping).fillna(0)
     return encoded
 
 def one_hot_encoding(column_df):

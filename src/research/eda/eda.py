@@ -91,4 +91,4 @@ def explore_dataset(df_path: str, simple_report: str, detailed_report: str, incl
 
     # Save reports
     pd.DataFrame(simple_list).to_csv(simple_report, index=False)
-    pd.DataFrame(detailed_list).to_csv(detailed_report, index=False)
+    #pd.DataFrame(detailed_list).to_csv(detailed_report, index=False)

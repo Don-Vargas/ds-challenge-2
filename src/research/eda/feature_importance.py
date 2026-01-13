@@ -30,7 +30,12 @@ def ranking_kings(datasets_path, output_path):
 
         logger.info("Loaded dataset %s with shape %s", ds, df.shape)
 
-        X = df.drop(columns=['target', 'player_id'])
+        column_drop = ['target', 'player_id','original_position','original_team', 
+                       'original_opponent', 'original_game_location', 
+                       'original_rest_days', 'original_high_usage_scorer', 
+                       'original_high_eff_min','original_high_eff_scorer']
+        existing_cols = [c for c in column_drop if c in df.columns]
+        X = df.drop(columns=existing_cols)
         X.columns = X.columns.astype(str)
         y = df['target']
 
