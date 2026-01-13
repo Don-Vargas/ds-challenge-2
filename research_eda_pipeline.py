@@ -11,7 +11,8 @@ from src.research.eda import (
     correlation,
     feature_engineering,
     dataset_engineering,
-    feature_importance
+    feature_importance,
+    training_dataset_building
 )
 
 # Configure logging
@@ -81,6 +82,8 @@ if __name__ == "__main__":
         logging.info("Calculating feature importance rankings...")
         feature_importance.ranking_kings(f'{EDA_DATASET_PATH}_{ds_version}', output_path=EDA_FIGURES_PATH)
         logging.info("Feature importance ranking completed.")
+
+        training_dataset_building.dataset_building(f'{EDA_DATASET_PATH}_{ds_version}')
 
         logging.info("Data processing pipeline finished successfully.")
 
