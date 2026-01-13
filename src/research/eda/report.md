@@ -240,16 +240,32 @@ No preprocessing - None
 | **Target Variable**      |         |         |              |              |             |              |              |               |
 | target              | Binary Class | 2       | None         | None         | None        | None         | None         | None          |
 
-## Feature Importance
+## Feature Importance - Feature Selection
 
-Random forest classifier
+Random forest classifier for ds1, ds3, and ds5
 
-Recursive Feature Elimination (RFE)
+| Feature          | ds1 | ds2 | ds3 | ds4 | class   | ds5 | ds6 |
+|------------------|:---:|:---:|:---:|:---:|:------: |:---:|:---:|
+| eff_per_min      |  X  |  X  |     |     | 6       |  X  |  X  |
+| efficency        |  X  |  X  |  X  |  X  | 10      |  X  |  X  |
+| scoring_impact   |  X  |  X  |  X  |  X  | 2, 3    |  X  |  X  |
+| eff_per_point    |  X  |  X  |  X  |  X  | 2       |  X  |  X  |
+| eff_time_minutes |  X  |  X  |  X  |  X  | 4, 2, 3 |  X  |  X  |
+| plus_minus       |  X  |  X  |  X  |  X  |         |     |     |
+| turnovers        |  X  |  X  |  X  |  X  |         |     |     |
+| scoring_volume   |  X  |  X  |  X  |  X  |         |     |     |
+| opponent         |     |     |  X  |  X  |         |     |     |
+| team             |     |     |  X  |  X  |         |     |     |
+| high_eff_min     |     |     |     |     | 0.7963  |  X  |  X  |
+| high_eff_scorer  |     |     |     |     | 0.5361  |  X  |  X  |
+| assit            |     |     |     |     | 4       |  X  |  X  |
+| PCA              |  X  |  X  |  X  |  X  |         |     |     | 
 
-## Dimentionality Reduction 
+<!--
+ Recursive Feature Elimination (RFE)
+-->
+## Training Datasets
 
-**DS 1** - PCA - 
-**DS 2** - PCA - 
-**DS 3** - PCA - 
-**DS 4** - PCA - 
+Six datasets with the most important features selected based on the feature importances computed above, and four PCA-reduced datasets.
 
+## model training
