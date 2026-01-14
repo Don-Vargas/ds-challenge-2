@@ -1,57 +1,47 @@
 import pandas as pd
 import time
 import logging
-from src.artifacts.feature_importance.importance_ranking import rank_features, plot_feature_importance
+
+from src.artifacts.feature_importance.importance_ranking import get_tree_importance, get_permutation_importance
+from src.artifacts.feature_importance.importance_models import train_random_forest
 
 logger = logging.getLogger(__name__)
 
 # --------------------------
-# Main function
+# 
 # --------------------------
 
-def ranking_kings(datasets_path, output_path):
-    datasets = ['_ds1', '_ds3', '_ds5']
+def rank_all_features(datasets, y):
+    all_rankings = {} 
 
-    logger.info(
-        "Starting feature importance ranking for %d datasets",
-        len(datasets)
-    )
+    for ds, X in datasets.items():
+        logger.info("Ranking features (%d total features)", X.shape[1])
+        start_total = time.perf_counter()
 
-    pipeline_start = time.perf_counter()
+        model = train_random_forest(X, y)
 
-    for ds in datasets:
-        dataset_start = time.perf_counter()
-        logger.info("Processing dataset: %s", ds)
+        tree_imp = get_tree_importance(model, X)
+        perm_imp = get_permutation_importance(model, X, y)
 
-        df = pd.read_csv(
-            f'{datasets_path}{ds}.csv',
-            index_col='row_id'
-        )
+        df = pd.DataFrame({
+            'tree': tree_imp,
+            'permutation': perm_imp
+        })
 
-        logger.info("Loaded dataset %s with shape %s", ds, df.shape)
+        df['avg_rank'] = df.rank(ascending=False).mean(axis=1)
+        df = df.sort_values('avg_rank')
 
-        X = df.drop(columns=['target', 'player_id'])
-        X.columns = X.columns.astype(str)
-        y = df['target']
-
-        feature_rankings = rank_features(X, y)
-
-        plot_feature_importance(
-            feature_rankings,
-            top_n=10,
-            dataset_name=ds,
-            output_path=output_path,
-            dataset=ds
-        )
-
-        elapsed_ds = time.perf_counter() - dataset_start
+        elapsed_total = time.perf_counter() - start_total
         logger.info(
-            "Dataset %s processed in %.2f seconds",
-            ds, elapsed_ds
+            "Feature ranking completed in %.2f seconds. Top feature: %s",
+            elapsed_total, df.index[0]
         )
 
-    total_elapsed = time.perf_counter() - pipeline_start
-    logger.info(
-        "Feature importance ranking pipeline completed in %.2f seconds",
-        total_elapsed
-    )
+        all_rankings[ds] = {
+            "tree_importance": tree_imp,
+            "permutation_importance": perm_imp,
+            "aggregated_ranking": df
+        }
+
+    return all_rankings
+

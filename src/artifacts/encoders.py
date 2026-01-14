@@ -7,7 +7,23 @@ def frequency_encoding(column_df):
     """
     freq = column_df.value_counts() / len(column_df)
     encoded = column_df.map(freq)
-    return encoded
+    encoding_config = {
+        "mapping": freq.to_dict(),
+        "encoding_type": "frequency"
+    }
+    
+    return encoded, encoding_config
+
+def apply_back_frequency_encoding(column_df, encoding_config):
+    """
+    Applies a precomputed frequency encoding to a column using the provided encoding_config.
+    Unseen values will be encoded as 0.
+    """
+    mapping = encoding_config["mapping"]
+    
+    encoded = column_df.map(mapping).fillna(0)
+    
+    return encoded, None
 
 def one_hot_encoding(column_df):
     """

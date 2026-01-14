@@ -1,5 +1,6 @@
 import os
 import pickle
+import pandas as pd
 
 def path_validate(filepath):
     """
@@ -32,3 +33,18 @@ def save_pickle(obj, filepath):
         pickle.dump(obj, f)
 
     print(f"Objeto guardado en {filepath}")
+
+def export_data(df, output_path):
+    df.to_csv(output_path, index=True)
+
+def ingest_data(df_path, index_col, target_col=None):
+    df = pd.read_csv(df_path, index_col=index_col)
+
+    if target_col is not None:
+        X = df.drop(columns=[target_col])
+        y = df[target_col]
+    else:
+        X = df
+        y = None
+
+    return X, y
