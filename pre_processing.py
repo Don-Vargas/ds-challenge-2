@@ -3,7 +3,11 @@ from config.research import (
     RAW_DATA, TRAIN_DATA, TEST_DATA, SPLIT_SIZE,
     EDA_REPORT_PATH, EDA_FIGURES_PATH, EDA_DATASET_PATH
 )
-from src.utils.storage import path_validate, ingest_data, export_data
+from src.utils.storage import (path_validate, 
+                               ingest_data, 
+                               export_data, 
+                               save_pickle,
+                               load_pickle)
 from src.research.eda import (
     data_split,
     eda, 
@@ -80,7 +84,14 @@ DS_KEYS = {
 def init_datasets(df, ds_keys):
     return {ds: df.copy(deep=True) for ds in ds_keys}
 
-def preprocessing_pipeline(data_path, results_path, version, target_col=None, processing_configs=None, role = 'train'):
+def preprocessing_pipeline(data_path, results_path, version='last_version', target_col=None, processing_configs=None, role = 'train'):
+    processing_configs_file = f'training_parameter_results/{version}/processing_configs.pkl'
+    all_rankings_file = f'training_parameter_results/{version}/all_rankings.pkl'
+
+    if role != 'train':
+        processing_configs = load_pickle(processing_configs_file)
+        all_rankings = load_pickle(all_rankings_file)
+    
     X, y = ingest_data(data_path, index_col='row_id', target_col=target_col)
     player_id = X['player_id']
     X = X.drop(columns=['player_id'])
@@ -90,13 +101,13 @@ def preprocessing_pipeline(data_path, results_path, version, target_col=None, pr
     ds = init_datasets(X, DS_KEYS)
     ds, processing_configs = dataset_engineering.feature_engineering_pipeline(ds, DS_KEYS, processing_configs=processing_configs, role = role)
 
-    all_rankings = feature_importance.rank_all_features(ds, y, DS_KEYS)
-
-'''
-    training_dataset_building.dataset_building(ds, all_rankings)
-'''
-
-
+    if role == 'train':
+        all_rankings = feature_importance.rank_all_features(ds, y, DS_KEYS)
+        save_pickle(processing_configs, processing_configs_file)
+        save_pickle(all_rankings, all_rankings_file)
+        #all_rankings = load_pickle(all_rankings_file)
+        ds = training_dataset_building.dataset_building(ds, all_rankings)
+        [export_data(ds[name], f"src/research/eda/dataset/{role}/{version}/{name}.csv") for name in ds]
 
 if __name__ == "__main__":
     role= 'train'
