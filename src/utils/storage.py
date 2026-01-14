@@ -35,7 +35,9 @@ def save_pickle(obj, filepath):
     print(f"Objeto guardado en {filepath}")
 
 def export_data(df, output_path):
+    path_validate(output_path)
     df.to_csv(output_path, index=True)
+    print(f'file saved: {output_path}')
 
 def ingest_data(df_path, index_col, target_col=None):
     df = pd.read_csv(df_path, index_col=index_col)

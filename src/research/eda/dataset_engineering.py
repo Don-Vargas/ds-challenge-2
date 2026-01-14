@@ -1,4 +1,3 @@
-import pandas as pd
 from collections import defaultdict
 from src.artifacts import encoders, scalers, bining
 from src.artifacts.dimentionality_reduction import pca

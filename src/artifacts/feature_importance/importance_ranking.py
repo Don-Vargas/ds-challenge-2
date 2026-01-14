@@ -21,7 +21,7 @@ def get_tree_importance(model, X):
     return importance.sort_values(ascending=False)
 
 
-def get_permutation_importance(model, X, y, n_repeats=10, random_state=42):
+def get_permutation_importance(model, X, y, n_repeats=40, random_state=42):
     logger.info(
         "Computing permutation importance (n_repeats=%d)", n_repeats
     )
