@@ -1,16 +1,19 @@
-from sklearn.preprocessing import MinMaxScaler, StandardScaler, Normalizer
-import numpy as np
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 # Min-Max Scaling
 def minimaxation(column_df):
     scaler = MinMaxScaler()
-    # Reshape the column to be 2D
     scaled_data = scaler.fit_transform(column_df.values.reshape(-1, 1))
-    return scaled_data
+    return scaled_data, scaler
 
 # Standardization (Z-score)
 def standardization(column_df):
-    std_scaler = StandardScaler()
-    # Reshape the column to be 2D
-    standardized_data = std_scaler.fit_transform(column_df.values.reshape(-1, 1))
-    return standardized_data
+    scaler = StandardScaler()
+    standardized_data = scaler.fit_transform(column_df.values.reshape(-1, 1))
+    return standardized_data, scaler
+
+def apply_scaling_back(column_df, fitted_scalers):
+    scaler = fitted_scalers
+    original_data = scaler.inverse_transform(column_df.values.reshape(-1, 1))
+    return pd.Series(original_data.flatten(), index=column_df.index)

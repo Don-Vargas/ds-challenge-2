@@ -70,10 +70,10 @@ DS_KEYS = {
     },
     "ds5": {"one_hot_from": "ds3"},
     "ds6": {"one_hot_from": "ds4"},
-    "ds7": {"PCA_from": "ds1"},
-    "ds8": {"PCA_from": "ds2"},
-    "ds9": {"PCA_from": "ds3"},
-    "ds10": {"PCA_from": "ds4"}
+    "ds7":  {"pca_from": "ds1"},
+    "ds8":  {"pca_from": "ds2"},
+    "ds9":  {"pca_from": "ds3"},
+    "ds10": {"pca_from": "ds4"}
 }
 
 
@@ -90,9 +90,9 @@ def preprocessing_pipeline(data_path, results_path, version, target_col=None, pr
     ds = init_datasets(X, DS_KEYS)
     ds, processing_configs = dataset_engineering.feature_engineering_pipeline(ds, DS_KEYS, processing_configs=processing_configs, role = role)
 
-'''
-    all_rankings = feature_importance.rank_all_features(ds, y)
+    all_rankings = feature_importance.rank_all_features(ds, y, DS_KEYS)
 
+'''
     training_dataset_building.dataset_building(ds, all_rankings)
 '''
 
