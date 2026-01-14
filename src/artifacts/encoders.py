@@ -62,7 +62,7 @@ def one_hot_encoding(df, drop_first=True):
     return encoded_df, one_hot_config
 
 
-def apply_back_one_hot_encoding(encoded_df, one_hot_config):
+def apply_back_one_hot_encoding(df, one_hot_config):
     encoded_df = pd.DataFrame(index=df.index)
     
     for col, info in one_hot_config.items():
