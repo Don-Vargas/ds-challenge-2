@@ -1,4 +1,4 @@
-import pandas as pd
+from collections import defaultdict
 import logging
 from config.research import (
     RAW_DATA, TRAIN_DATA, TEST_DATA, SPLIT_SIZE, INFERENCE_DATA,
@@ -98,6 +98,8 @@ def preprocessing_pipeline(data_path, results_path, version='last_version', targ
         logger.info("Loading processing configurations and rankings for inference.")
         processing_configs = load_pickle(processing_configs_file)
         all_rankings = load_pickle(all_rankings_file)
+    else:
+        processing_configs = defaultdict(dict)
     
     logger.info(f"Ingesting data from {data_path}")
     X, y = ingest_data(data_path, index_col='row_id', target_col=target_col)
@@ -129,6 +131,7 @@ def preprocessing_pipeline(data_path, results_path, version='last_version', targ
 
 if __name__ == "__main__":
     role = 'train'
+    #role = 'test'
     version = 'v1'
     target_col = 'target'
     results_path = EDA_DATASET_PATH
