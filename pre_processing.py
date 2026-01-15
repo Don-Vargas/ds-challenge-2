@@ -120,13 +120,10 @@ def preprocessing_pipeline(data_path, results_path, version='last_version', targ
         save_pickle(all_rankings, all_rankings_file)
         logger.info(f"Processing configurations and rankings saved in 'training_parameter_results/{version}'")
         ds = training_dataset_building.dataset_building(ds, all_rankings)
-        export_results = f"{results_path}train/{name}.csv"
-    else:
-        export_results = f"{results_path}test/{name}.csv"
 
     logger.info(f"Exporting processed datasets to {results_path}")
     for name in ds:
-        export_data(ds[name], export_results)
+        export_data(ds[name], f"{results_path}{role}/{name}.csv")
         logger.info(f"Dataset {name} exported successfully.")
 
 if __name__ == "__main__":
