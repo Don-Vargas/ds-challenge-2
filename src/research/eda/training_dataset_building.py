@@ -10,11 +10,17 @@ def dataset_building(datasets, all_rankings):
     ds = defaultdict(dict)
     
     for dataset_name, ranking_info in all_rankings.items():
-        top_features = set(ranking_info['top_features'])
-        data_frame = datasets[dataset_name]
-        selected_cols = [col for col in data_frame.columns if col in top_features]
+        top_features = list(ranking_info['top_features'])
+        data_frame = datasets[dataset_name].copy()
+        all_bool = all(data_frame[col].dtype == bool for col in data_frame.columns)
+        missing_cols = set(top_features) - set(data_frame.columns)
 
-        ds[dataset_name] = data_frame[selected_cols]
+        print(f'missing columns: n\ {missing_cols}') if missing_cols else print('no missing columns')
+        fill_value = False if all_bool else 0
+        for col in missing_cols:
+            data_frame[col] = fill_value
+
+        ds[dataset_name] = data_frame[top_features]
 
     for dataset_name in ['ds7','ds8','ds9','ds10']:
         ds[dataset_name] = datasets[dataset_name]
