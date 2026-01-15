@@ -119,7 +119,7 @@ def preprocessing_pipeline(data_path, results_path, version='last_version', targ
         save_pickle(processing_configs, processing_configs_file)
         save_pickle(all_rankings, all_rankings_file)
         logger.info(f"Processing configurations and rankings saved in 'training_parameter_results/{version}'")
-        ds = training_dataset_building.dataset_building(ds, all_rankings)
+    ds = training_dataset_building.dataset_building(ds, all_rankings)
 
     logger.info(f"Exporting processed datasets to {results_path}")
     for name in ds:
