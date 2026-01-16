@@ -127,7 +127,9 @@ def apply_pca(target_ds, df, role='train', pca_config=None):
 
 #--------------------------------
 def feature_engineering_pipeline(datasets, ds_keys, processing_configs=None, role = 'train'):
+    '''
     df_temp = datasets['ds1'].copy()
+    '''
     if role == 'train':
         processing_configs = defaultdict(dict)
         freq_config = defaultdict(dict)
