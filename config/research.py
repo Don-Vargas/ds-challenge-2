@@ -10,5 +10,7 @@ EDA_REPORT_PATH = 'src/research/eda/tables/'
 EDA_FIGURES_PATH = 'src/research/eda/figures/'
 EDA_DATASET_PATH = 'src/research/eda/dataset/'
 
+MODELING_RESULTS= 'src/modeling/'
+
 REGISTRY_MODEL = 'src/research/registry/model_registry.json'
 REGISTRY_DATASET = 'src/research/registry/dataset_registry.json'

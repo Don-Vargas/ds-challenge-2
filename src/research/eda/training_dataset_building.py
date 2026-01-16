@@ -8,7 +8,7 @@ def dataset_building(datasets, all_rankings, y, role='train'):
     :param role: 'train', 'test', or other (e.g. 'inference')
     '''
     ds = defaultdict(dict)
-    
+
     for dataset_name, ranking_info in all_rankings.items():
         top_features = list(ranking_info['top_features'])
         data_frame = datasets[dataset_name].copy()
@@ -30,11 +30,12 @@ def dataset_building(datasets, all_rankings, y, role='train'):
         ds[dataset_name] = data_frame
 
     for dataset_name in ['ds7', 'ds8', 'ds9', 'ds10']:
-        data_frame = datasets[dataset_name].copy()
+        if dataset_name in all_rankings:
+            data_frame = datasets[dataset_name].copy()
 
-        if role in ('train', 'test'):
-            data_frame['target'] = y
+            if role in ('train', 'test'):
+                data_frame['target'] = y
 
-        ds[dataset_name] = data_frame
+            ds[dataset_name] = data_frame
 
     return ds

@@ -1,6 +1,6 @@
 from collections import defaultdict
 from collections import ChainMap
-from src.artifacts import encoders, scalers, bining
+from src.artifacts.preprocessing import encoders, scalers, bining
 from src.artifacts.dimentionality_reduction import pca
 
 

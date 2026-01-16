@@ -1,18 +1,13 @@
 from collections import defaultdict
 import logging
-from config.research import (
-    RAW_DATA, TRAIN_DATA, TEST_DATA, SPLIT_SIZE, INFERENCE_DATA,
-    EDA_REPORT_PATH, EDA_FIGURES_PATH, EDA_DATASET_PATH
-)
+
 from src.utils.storage import (
-    path_validate,
     ingest_data,
     export_data,
     save_pickle,
     load_pickle
 )
 from src.research.eda import (
-    data_split,
     eda,
     plot_distributions,
     correlation,
@@ -32,16 +27,6 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger(__name__)
-
-def starter(run_split: bool = False):
-    if run_split:
-        logger.info("Splitting raw dataset into train and test sets.")
-        data_split.split_and_save_datasets(
-            RAW_DATA,
-            TRAIN_DATA, TEST_DATA,
-            test_size=SPLIT_SIZE, random_state=42
-        )
-        logger.info(f"Datasets saved: TRAIN_DATA={TRAIN_DATA}, TEST_DATA={TEST_DATA}")
 
 # --- Column Definitions ---
 FREQ_ENCODING_COLS = [
@@ -209,26 +194,59 @@ def preprocessing_pipeline(data_path, results_path, version='last_version', targ
     logger.info("Preprocessing pipeline completed successfully.")
     logger.info("=" * 80)
 
-if __name__ == "__main__":
-    #role = 'train'
-    role = 'test'
-    #role = 'inference'
-    version = 'v1'
-    target_col = 'target'
-    results_path = EDA_DATASET_PATH
+def preprocessing_inference_pipeline(
+    data_path, 
+    results_path, 
+    version='last_version',
+    selected_ds='ds1'
+):
+    """
+    Preprocess new/blind data for inference using a selected dataset configuration.
+    
+    Args:
+        data_path (str): Path to raw data CSV.
+        results_path (str): Directory to save processed datasets.
+        version (str): Version folder where processing configs are stored.
+        selected_ds (str): Dataset key from DS_KEYS to process.
+    """
 
-    routes = [EDA_REPORT_PATH, EDA_FIGURES_PATH, EDA_DATASET_PATH]
-    for route in routes:
-        path_validate(route)
-        logger.info(f"Validated path: {route}")
-    if role == 'train':
-        data_path = TRAIN_DATA
-    elif role == 'test':
-        data_path = TEST_DATA
-    else:
-        data_path = INFERENCE_DATA
+    # Load processing configs and feature rankings from training
+    processing_configs_file = f'training_parameter_results/{version}/processing_configs.pkl'
+    all_rankings_file = f'training_parameter_results/{version}/all_rankings.pkl'
 
-    logger.info("Starting pipeline execution.")
-    starter()
-    preprocessing_pipeline(data_path, results_path, version, target_col=target_col, role=role)
-    logger.info("Pipeline execution completed.")
+    processing_configs = load_pickle(processing_configs_file)
+    all_rankings = load_pickle(all_rankings_file)
+    all_rankings = {selected_ds: all_rankings[selected_ds]}
+
+    # Load blind data
+    X, y = ingest_data(data_path, index_col='row_id')
+    player_id = X['player_id']
+    X = X.drop(columns=['player_id'])
+
+    # Feature creation
+    X = feature_engineering.feature_creation_pipeline(X)
+
+    # Initialize selected dataset only
+    ds = {selected_ds: X.copy(deep=True)}
+
+    # Apply dataset-level feature engineering
+    ds, _ = dataset_engineering.feature_engineering_pipeline(
+        ds,
+        {selected_ds: DS_KEYS[selected_ds]},
+        processing_configs=processing_configs,
+        role='inference'
+    )
+
+    # Build final dataset using stored feature rankings
+    ds = training_dataset_building.dataset_building(
+        ds, 
+        all_rankings, 
+        y, 
+        role='inference'
+    )
+
+    # Export the processed dataset
+    export_path = f"{results_path}inference/{selected_ds}.csv"
+    export_data(ds[selected_ds], export_path)
+
+    return ds[selected_ds]
