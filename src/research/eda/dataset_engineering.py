@@ -1,6 +1,6 @@
 from collections import defaultdict
 from collections import ChainMap
-from src.artifacts import encoders, scalers, bining
+from src.artifacts.preprocessing import encoders, scalers, bining
 from src.artifacts.dimentionality_reduction import pca
 
 
@@ -127,7 +127,9 @@ def apply_pca(target_ds, df, role='train', pca_config=None):
 
 #--------------------------------
 def feature_engineering_pipeline(datasets, ds_keys, processing_configs=None, role = 'train'):
+    '''
     df_temp = datasets['ds1'].copy()
+    '''
     if role == 'train':
         processing_configs = defaultdict(dict)
         freq_config = defaultdict(dict)
