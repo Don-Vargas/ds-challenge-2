@@ -33,7 +33,7 @@ def dataset_building(datasets, all_rankings, y, role='train'):
         data_frame = datasets[dataset_name].copy()
 
         if role in ('train', 'test'):
-            data_frame['y'] = y
+            data_frame['target'] = y
 
         ds[dataset_name] = data_frame
 
