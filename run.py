@@ -18,7 +18,7 @@ def starter(run_split: bool = False):
         )
 
 if __name__ == "__main__":
-    inference_mode = 1
+    inference_mode = False
     version = 'v1'
     target_col = 'target'
 
@@ -32,7 +32,14 @@ if __name__ == "__main__":
     testing_data_path  = TESTING_DATA
     best_model_path = MODEL_PARAMETER_RESULTS
 
-    if inference_mode == 0:
+    if inference_mode:
+        role = 'inference'
+        results_path = MODEL_PARAMETER_RESULTS
+        selected_ds = 'ds4'
+        pre_processing.preprocessing_inference_pipeline(INFERENCE_DATA, results_path, version, selected_ds)
+        modeling.model_inference_pipeline(MODEL_DATA_SET, results_path, version, selected_ds)
+
+    else:
         starter()
 
         for role, data_path in datasets:
@@ -44,10 +51,3 @@ if __name__ == "__main__":
                 role=role
             )
         modeling.model_training_pipeline(training_data_path, testing_data_path, MODELING_RESULTS, best_model_path, version, target_col=target_col)
-
-    elif inference_mode == 1:
-        role = 'inference'
-        results_path = MODEL_PARAMETER_RESULTS
-        selected_ds = 'ds4'
-        pre_processing.preprocessing_inference_pipeline(INFERENCE_DATA, results_path, version, selected_ds)
-        modeling.model_inference_pipeline(MODEL_DATA_SET, results_path, version, selected_ds)
