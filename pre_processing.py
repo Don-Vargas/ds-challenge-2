@@ -70,15 +70,18 @@ DS_KEYS = {
     "ds10": {"pca_from": "ds4"}
 }
 
+
 def init_datasets(df, ds_keys):
-    logger.info(f"Initializing {len(ds_keys)} datasets copies.")
+    logger.info(f"Initializing {len(ds_keys)} dataset copies.")
     return {ds: df.copy(deep=True) for ds in ds_keys}
 
-def preprocessing_pipeline(data_path, results_path, version='last_version', target_col=None, role='train'):
+
+def preprocessing_pipeline(data_path, results_path, version='last_version',
+                           target_col=None, role='train'):
     logger.info("=" * 80)
     logger.info(
-        f"Starting preprocessing pipeline | "
-        f"Role: {role} | Version: {version} | Target column: {target_col}"
+        f"Starting preprocessing pipeline | Role: {role} | "
+        f"Version: {version} | Target column: {target_col}"
     )
 
     processing_configs_file = f'training_parameter_results/{version}/processing_configs.pkl'
@@ -117,7 +120,6 @@ def preprocessing_pipeline(data_path, results_path, version='last_version', targ
 
     player_id = X['player_id']
     X = X.drop(columns=['player_id'])
-
     logger.info("Dropped identifier column: 'player_id'")
 
     # ------------------------------------------------------------------
@@ -194,59 +196,62 @@ def preprocessing_pipeline(data_path, results_path, version='last_version', targ
     logger.info("Preprocessing pipeline completed successfully.")
     logger.info("=" * 80)
 
-def preprocessing_inference_pipeline(
-    data_path, 
-    results_path, 
-    version='last_version',
-    selected_ds='ds1'
-):
+
+def preprocessing_inference_pipeline(data_path, results_path, version='last_version',
+                                     selected_ds='ds1'):
     """
     Preprocess new/blind data for inference using a selected dataset configuration.
-    
+
     Args:
         data_path (str): Path to raw data CSV.
         results_path (str): Directory to save processed datasets.
         version (str): Version folder where processing configs are stored.
         selected_ds (str): Dataset key from DS_KEYS to process.
     """
+    logger.info("=" * 80)
+    logger.info(
+        f"Starting inference preprocessing | Version: {version} | "
+        f"Selected dataset: {selected_ds}"
+    )
 
-    # Load processing configs and feature rankings from training
     processing_configs_file = f'training_parameter_results/{version}/processing_configs.pkl'
     all_rankings_file = f'training_parameter_results/{version}/all_rankings.pkl'
 
+    logger.info("Loading processing configurations and feature rankings from training.")
     processing_configs = load_pickle(processing_configs_file)
     all_rankings = load_pickle(all_rankings_file)
     all_rankings = {selected_ds: all_rankings[selected_ds]}
 
-    # Load blind data
+    logger.info(f"Ingesting blind data from: {data_path}")
     X, y = ingest_data(data_path, index_col='row_id')
-    player_id = X['player_id']
+
     X = X.drop(columns=['player_id'])
+    logger.info("Dropped identifier column: 'player_id'")
 
-    # Feature creation
+    logger.info("Starting feature creation pipeline for inference data.")
     X = feature_engineering.feature_creation_pipeline(X)
+    logger.info(f"Feature creation completed. Feature matrix shape: {X.shape}")
 
-    # Initialize selected dataset only
     ds = {selected_ds: X.copy(deep=True)}
+    logger.info(f"Initialized inference dataset: {selected_ds}({ds[selected_ds].shape})")
 
-    # Apply dataset-level feature engineering
+    logger.info("Starting dataset-level feature engineering for inference.")
     ds, _ = dataset_engineering.feature_engineering_pipeline(
         ds,
         {selected_ds: DS_KEYS[selected_ds]},
         processing_configs=processing_configs,
         role='inference'
     )
+    logger.info(f"Dataset-level feature engineering completed for {selected_ds}.")
 
-    # Build final dataset using stored feature rankings
-    ds = training_dataset_building.dataset_building(
-        ds, 
-        all_rankings, 
-        y, 
-        role='inference'
-    )
+    logger.info("Building final inference dataset using stored feature rankings.")
+    ds = training_dataset_building.dataset_building(ds, all_rankings, y, role='inference')
+    logger.info(f"Final dataset built for {selected_ds}. Shape: {ds[selected_ds].shape}")
 
-    # Export the processed dataset
     export_path = f"{results_path}inference/{selected_ds}.csv"
     export_data(ds[selected_ds], export_path)
+    logger.info(f"Inference dataset '{selected_ds}' exported successfully to {export_path}")
+    logger.info("Inference preprocessing pipeline completed successfully.")
+    logger.info("=" * 80)
 
     return ds[selected_ds]

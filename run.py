@@ -18,7 +18,7 @@ def starter(run_split: bool = False):
         )
 
 if __name__ == "__main__":
-    inference_mode = False
+    inference_mode = True
     version = 'v1'
     target_col = 'target'
 

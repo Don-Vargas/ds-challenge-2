@@ -1,7 +1,7 @@
 ROLE = 'research'
 
 RAW_DATA = 'data/raw_data/training_data.csv'
-SPLIT_SIZE = 0.2
+SPLIT_SIZE = 4/9
 TRAIN_DATA = 'data/train.csv'
 TEST_DATA = 'data/test.csv'
 INFERENCE_DATA = 'data/raw_data/blind_test_data.csv'

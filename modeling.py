@@ -1,3 +1,4 @@
+import pandas as pd
 from src.utils.storage import ingest_data, export_data, save_pickle, load_pickle
 from src.model_experiments import experiments
 
@@ -68,24 +69,28 @@ def model_inference_pipeline(inference_data_path, results_path, version, selecte
     # ---------------------------------------------------
     # Generate predictions (probabilities for positive class)
     # ---------------------------------------------------
-    model_dict = load_pickle(f'{results_path}{version}/best_model{selected_ds}.pkl')
+    model_dict = load_pickle(f'{results_path}{version}/best_model_{selected_ds}.pkl')
     print(model_dict)
     model = model_dict['best_estimator'] 
+    # ---------------------------------------------------
+    # Run inference
+    # ---------------------------------------------------
     if hasattr(model, "predict_proba"):
-        y_pred_proba = model.predict_proba(X_infer.drop(columns='row_id'))[:, 1]
+        y_pred_proba = model.predict_proba(X_infer)[:, 1]
     else:
-        y_pred_proba = model.predict(X_infer.drop(columns='row_id'))
+        y_pred_proba = model.predict(X_infer)
 
     # ---------------------------------------------------
     # Prepare dataframe to export
     # ---------------------------------------------------
-    df_results = X_infer[['row_id']].copy()  # only keep row_id
-    df_results['prediction'] = y_pred_proba
+    df_results = pd.DataFrame({
+        'prediction': y_pred_proba
+    }, index=X_infer.index)
 
     # ---------------------------------------------------
     # Save predictions
     # ---------------------------------------------------
     export_path = f"{results_path}{version}/final_inferences.csv"
-    export_data(df_results, export_path)  # export the dataframe including row_id
+    export_data(df_results, export_path)
 
     print(f"Inference completed. Predictions saved to: {export_path}")
