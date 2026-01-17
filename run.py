@@ -68,7 +68,7 @@ if __name__ == "__main__":
     LOGGER.info("PIPELINE STARTED")
     LOGGER.info("=" * 80)
 
-    inference_mode: bool = True # False to train
+    inference_mode: bool = False # False to train
     version: str = "v1"
     target_col: str = "target"
 

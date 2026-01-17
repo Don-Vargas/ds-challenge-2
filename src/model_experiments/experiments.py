@@ -139,6 +139,7 @@ def experiment_results(
                     "test_roc_auc": test_roc_auc,
                     "cv_best_roc_auc": grid_search.best_score_,
                     "best_params": grid_search.best_params_,
+                    "y_test_proba": (y_test, y_test_proba),
                 }
             )
 
@@ -159,5 +160,6 @@ def experiment_results(
         "best_params": best_overall["best_params"],
         "cv_best_roc_auc": best_overall["cv_best_roc_auc"],
         "test_roc_auc": best_overall["test_roc_auc"],
+        "y_test_proba": best_overall["y_test_proba"],
         "all_model_results": roc_results,
     }

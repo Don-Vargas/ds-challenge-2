@@ -28,10 +28,10 @@ def analyze():
     df = feta_dict["features"].copy()
     df["player_id"] = feta_dict["player_id"]
     df["target"] = feta_dict["target"]
-    #plot_distributions.generate_plots(df,'src/eda/figures/distributions/')
+    plot_distributions.generate_plots(df,'src/eda/figures/distributions/')
 
-    #eda.pandas_summary(df, 'src/eda/tables/eda_engineered_ds.csv')
-    #correlation.continuous_features_correlation_analysis(ds,'src/eda/figures/')
+    eda.pandas_summary(df, 'src/eda/tables/eda_engineered_ds.csv')
+    correlation.continuous_features_correlation_analysis(ds,'src/eda/figures/')
 
     # ------------------------------------------------------------------
     # all rankins
