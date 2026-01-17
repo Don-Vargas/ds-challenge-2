@@ -1,69 +1,106 @@
+import logging
+from typing import Dict, Any
+
 import pandas as pd
-
-from sklearn.model_selection import GridSearchCV, StratifiedKFold
+from sklearn.ensemble import (
+    GradientBoostingClassifier,
+    RandomForestClassifier,
+)
 from sklearn.impute import SimpleImputer
-from sklearn.pipeline import Pipeline
 from sklearn.metrics import roc_auc_score
-
+from sklearn.model_selection import GridSearchCV, StratifiedKFold
+from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+
+
+# ---------------------------------------------------
+# Logging configuration
+# ---------------------------------------------------
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+if not logger.handlers:
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter(
+        "%(asctime)s | %(levelname)s | %(message)s"
+    )
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
 
 # ---------------------------------------------------
 # Model configuration (ROC-AUC only)
 # ---------------------------------------------------
-
-model_training_configs = {
+MODEL_TRAINING_CONFIGS: Dict[str, Dict[str, Any]] = {
     "decision_tree": {
         "model": DecisionTreeClassifier(),
         "params": {
             "model__max_depth": [None, 5, 10, 20],
             "model__min_samples_split": [2, 5],
-            "model__min_samples_leaf": [1, 2]
-        }
+            "model__min_samples_leaf": [1, 2],
+        },
     },
     "random_forest": {
-        "model": RandomForestClassifier(random_state=42, n_jobs=-1),
+        "model": RandomForestClassifier(
+            random_state=42,
+            n_jobs=-1,
+        ),
         "params": {
             "model__n_estimators": [100, 200],
             "model__max_depth": [None, 10, 20],
             "model__min_samples_split": [2, 5],
-            "model__min_samples_leaf": [1, 2]
-        }
+            "model__min_samples_leaf": [1, 2],
+        },
     },
     "gradient_boosting": {
         "model": GradientBoostingClassifier(random_state=42),
         "params": {
             "model__n_estimators": [100, 200],
             "model__learning_rate": [0.05, 0.1],
-            "model__max_depth": [3, 5]
-        }
-    }
+            "model__max_depth": [3, 5],
+        },
+    },
 }
 
 
-def experiment_results(X_train, y_train, X_test,  y_test, version):
+def experiment_results(
+    X_train,
+    y_train,
+    X_test,
+    y_test,
+    version: str,
+) -> Dict[str, Any]:
+    """Train models using ROC-AUC optimization and compare results."""
+    logger.info("Starting experiment version: %s", version)
+
     # ---------------------------------------------------
     # CV setup
     # ---------------------------------------------------
-    cv = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
+    cv = StratifiedKFold(
+        n_splits=10,
+        shuffle=True,
+        random_state=42,
+    )
 
-    roc_results = {}
-    best_overall = {
+    roc_results: Dict[str, Dict[str, Any]] = {}
+    best_overall: Dict[str, Any] = {
         "model_name": None,
         "estimator": None,
-        "test_roc_auc": -float("inf")
+        "test_roc_auc": float("-inf"),
     }
 
     # ---------------------------------------------------
     # Training + ROC-AUC Optimization
     # ---------------------------------------------------
-    for model_name, config in model_training_configs.items():
-        print(f"\nOptimizing ROC-AUC for: {model_name}")
+    for model_name, config in MODEL_TRAINING_CONFIGS.items():
+        logger.info("Optimizing ROC-AUC for model: %s", model_name)
 
-        pipeline = Pipeline([
-            ("imputer", SimpleImputer(strategy="median")),  # or "mean", "most_frequent"
-            ("model", config["model"])
-        ])
+        pipeline = Pipeline(
+            steps=[
+                ("imputer", SimpleImputer(strategy="median")),
+                ("model", config["model"]),
+            ]
+        )
 
         grid_search = GridSearchCV(
             estimator=pipeline,
@@ -71,35 +108,39 @@ def experiment_results(X_train, y_train, X_test,  y_test, version):
             scoring="roc_auc",
             cv=cv,
             n_jobs=-1,
-            verbose=1
+            verbose=0,
         )
 
         grid_search.fit(X_train, y_train)
 
         best_model = grid_search.best_estimator_
 
-        # Test ROC-AUC
         y_test_proba = best_model.predict_proba(X_test)[:, 1]
         test_roc_auc = roc_auc_score(y_test, y_test_proba)
 
         roc_results[model_name] = {
             "cv_best_roc_auc": grid_search.best_score_,
             "test_roc_auc": test_roc_auc,
-            "best_params": grid_search.best_params_
+            "best_params": grid_search.best_params_,
         }
 
-        # Track best overall model
-        if test_roc_auc > best_overall["test_roc_auc"]:
-            best_overall.update({
-                "model_name": model_name,
-                "estimator": best_model,
-                "test_roc_auc": test_roc_auc,
-                "cv_best_roc_auc": grid_search.best_score_,
-                "best_params": grid_search.best_params_
-            })
+        logger.info(
+            "Model: %s | CV ROC-AUC: %.4f | Test ROC-AUC: %.4f",
+            model_name,
+            grid_search.best_score_,
+            test_roc_auc,
+        )
 
-        print("CV ROC-AUC:", grid_search.best_score_)
-        print("Test ROC-AUC:", test_roc_auc)
+        if test_roc_auc > best_overall["test_roc_auc"]:
+            best_overall.update(
+                {
+                    "model_name": model_name,
+                    "estimator": best_model,
+                    "test_roc_auc": test_roc_auc,
+                    "cv_best_roc_auc": grid_search.best_score_,
+                    "best_params": grid_search.best_params_,
+                }
+            )
 
     # ---------------------------------------------------
     # ROC-AUC comparison summary
@@ -109,9 +150,8 @@ def experiment_results(X_train, y_train, X_test,  y_test, version):
         .sort_values("test_roc_auc", ascending=False)
     )
 
-    print("\nROC-AUC model comparison:")
-    print(roc_auc_df)
-        
+    logger.info("ROC-AUC model comparison:\n%s", roc_auc_df)
+
     return {
         "version": version,
         "best_model_name": best_overall["model_name"],
@@ -119,5 +159,5 @@ def experiment_results(X_train, y_train, X_test,  y_test, version):
         "best_params": best_overall["best_params"],
         "cv_best_roc_auc": best_overall["cv_best_roc_auc"],
         "test_roc_auc": best_overall["test_roc_auc"],
-        "all_model_results": roc_results
+        "all_model_results": roc_results,
     }

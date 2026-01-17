@@ -131,6 +131,7 @@ def model_inference_pipeline(
     results_path: str,
     version: str,
     selected_ds: str,
+    threshold: float,
 ) -> None:
     """
     Run inference on new data using a previously trained model
@@ -169,8 +170,14 @@ def model_inference_pipeline(
         )
         y_pred_proba = model.predict(X_infer)
 
+    y_pred_bool = y_pred_proba >= threshold
+
+
     df_results = pd.DataFrame(
-        {"prediction": y_pred_proba},
+        {
+            "prediction_proba": y_pred_proba,
+            "prediction": y_pred_bool,
+        },
         index=X_infer.index,
     )
 

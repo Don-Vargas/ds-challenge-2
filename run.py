@@ -68,7 +68,7 @@ if __name__ == "__main__":
     LOGGER.info("PIPELINE STARTED")
     LOGGER.info("=" * 80)
 
-    inference_mode: bool = True
+    inference_mode: bool = True # False to train
     version: str = "v1"
     target_col: str = "target"
 
@@ -104,6 +104,7 @@ if __name__ == "__main__":
     training_data_path: str = TRAINING_DATA
     testing_data_path: str = TESTING_DATA
     best_model_path: str = MODEL_PARAMETER_RESULTS
+    threshold = 0.5
 
     # --------------------------------------------------------------
     # Inference mode
@@ -135,6 +136,7 @@ if __name__ == "__main__":
             results_path,
             version,
             selected_ds,
+            threshold,
         )
 
         LOGGER.info("Inference pipeline completed successfully.")
@@ -147,7 +149,7 @@ if __name__ == "__main__":
         LOGGER.info("TRAINING MODE ENABLED")
         LOGGER.info("-" * 80)
 
-        starter(run_split=False)
+        starter(run_split=True) # true to split
 
         LOGGER.info("Starting preprocessing pipelines.")
         for role, data_path in datasets:

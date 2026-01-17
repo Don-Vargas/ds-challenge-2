@@ -8,9 +8,6 @@ from src.utils.storage import (
     load_pickle
 )
 from src.research import (
-    eda,
-    plot_distributions,
-    correlation,
     feature_engineering,
     dataset_engineering,
     feature_importance,
@@ -130,6 +127,12 @@ def preprocessing_pipeline(data_path, results_path, version='last_version',
     logger.info(f"Feature creation completed. New feature matrix shape: {X.shape}")
 
     # ------------------------------------------------------------------
+    # Export dataset for data analysis and visualization
+    # ------------------------------------------------------------------
+    export_eda_data = {'features': X, 'player_id': player_id, 'target': y}
+    save_pickle(export_eda_data, 'src/eda/eda_feature_engineered.pkl')
+
+    # ------------------------------------------------------------------
     # Dataset initialization
     # ------------------------------------------------------------------
     logger.info(f"Initializing datasets with keys: {DS_KEYS}")
@@ -172,6 +175,11 @@ def preprocessing_pipeline(data_path, results_path, version='last_version',
             f"Processing configurations and rankings saved to "
             f"'training_parameter_results/{version}'"
         )
+
+    # ------------------------------------------------------------------
+    # Export dataset for data analysis and visualization
+    # ------------------------------------------------------------------
+    save_pickle(ds, 'src/eda/eda_ds_dictionary.pkl')
 
     # ------------------------------------------------------------------
     # Dataset building

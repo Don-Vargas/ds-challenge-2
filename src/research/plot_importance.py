@@ -1,15 +1,32 @@
-
 import matplotlib.pyplot as plt
 import seaborn as sns
+import logging
+import os
 
 sns.set_theme(style="whitegrid")  # nicer plots
 
 # --------------------------
+# Logging setup
+# --------------------------
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# --------------------------
+# Helper function to validate path
+# --------------------------
+def path_validate(file_path):
+    """Ensure the directory exists before saving the file."""
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+# --------------------------
 # Plotting function
 # --------------------------
-
 def plot_feature_importance(feature_rankings, 
-                            top_n=10, dataset_name="Dataset", 
+                            top_n=10, 
+                            dataset_name="Dataset", 
                             output_path='output_path', 
                             dataset='dataset'):
     """
@@ -32,11 +49,12 @@ def plot_feature_importance(feature_rankings,
             y=imp.index,
             hue=imp.index,
             palette="viridis",
+            dodge=False,
             legend=False
         )
         plt.tight_layout()
 
-        file_path = f"{output_path}feature_importance_importance/{dataset}/{imp_type}.png"
+        file_path = f"{output_path}{dataset_name}/{imp_type}.png"
         path_validate(file_path)
 
         plt.savefig(file_path, dpi=300)
@@ -52,11 +70,12 @@ def plot_feature_importance(feature_rankings,
         y=agg.index,
         hue=agg.index,
         palette="magma",
+        dodge=False,
         legend=False
     )
     plt.tight_layout()
 
-    file_path = f"{output_path}feature_importance_importance/{dataset}/aggregated_ranking.png"
+    file_path = f"{output_path}{dataset_name}/aggregated_ranking.png"
     path_validate(file_path)
 
     plt.savefig(file_path, dpi=300)

@@ -32,7 +32,7 @@ def rank_all_features(datasets, y, ds_keys, random_state=42, top_n=6):
 
         # Train model
         logger.info("  -> Training Random Forest model...")
-        model = train_random_forest(X, y, random_state=random_state)
+        model = train_random_forest(X, y, max_d=3, random_state=random_state)
         logger.info("     Model trained.")
 
         # Get feature importance

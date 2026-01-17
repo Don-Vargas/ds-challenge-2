@@ -11,6 +11,9 @@ def split_and_save_datasets(RAW_DATA,TRAIN_DATA,TEST_DATA, test_size=0.2, random
     # Split into train/test 0.2 (80/20)
     train_df, test_df = train_test_split(df, test_size=test_size, random_state=random_state)
 
+    print(f'train set lenght : {len(train_df)}')
+    print(f'test  set lenght : {len(test_df)}')
+    print('__--__--'*10)
     # Save to respective folders
     train_df.to_csv(TRAIN_DATA, index=False)
     test_df.to_csv(TEST_DATA, index=False)
