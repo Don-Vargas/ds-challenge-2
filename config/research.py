@@ -6,9 +6,9 @@ TRAIN_DATA = 'data/train.csv'
 TEST_DATA = 'data/test.csv'
 INFERENCE_DATA = 'data/raw_data/blind_test_data.csv'
 
-EDA_REPORT_PATH = 'src/research/eda/tables/'
-EDA_FIGURES_PATH = 'src/research/eda/figures/'
-EDA_DATASET_PATH = 'src/research/eda/dataset/'
+EDA_REPORT_PATH = 'src/research/tables/'
+EDA_FIGURES_PATH = 'src/research/figures/'
+EDA_DATASET_PATH = 'src/research/dataset/'
 
 MODELING_RESULTS= 'src/modeling/'
 
