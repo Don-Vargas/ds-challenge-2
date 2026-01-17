@@ -1,14 +1,44 @@
 from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
+import pandas as pd
 
-def pca_by_variance(X, variance_explain = 0.80):
+def pca_by_variance(X, variance_explain=0.80):
     """
-    Reduce dimensionality while keeping 80% explained variance.
+    Reduce dimensionality while keeping `variance_explain` explained variance.
     """
-    # Standardize (important for PCA)
-    X_scaled = StandardScaler().fit_transform(X)
-
     pca = PCA(n_components=variance_explain)
-    X_reduced = pca.fit_transform(X_scaled)
+    X_reduced = pca.fit_transform(X)
 
-    return X_reduced, pca.n_components_, pca.explained_variance_ratio_
+    # Create DataFrame with original index
+    component_names = [f"PC{i+1}" for i in range(pca.n_components_)]
+    X_reduced_df = pd.DataFrame(
+        X_reduced,
+        index=X.index,
+        columns=component_names
+    )
+
+    return {
+        'X_reduced': X_reduced_df,
+        'pca_config': pca
+    }
+
+
+def pca_transform(X, pca_config):
+    """
+    Transform new data using a fitted PCA and return a DataFrame
+    similar to pca_by_variance.
+    """
+    pca = pca_config["pca"]
+    X_reduced = pca.transform(X)
+
+    # Create DataFrame with original index and component names
+    component_names = [f"PC{i+1}" for i in range(pca.n_components_)]
+    X_reduced_df = pd.DataFrame(
+        X_reduced,
+        index=X.index,
+        columns=component_names
+    )
+
+    return {
+        'X_reduced': X_reduced_df,
+        'pca_config': None  # No need to return the config again
+    }
