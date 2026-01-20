@@ -16,7 +16,7 @@ def model_keys():
     print(experiment_results[dataset_name].keys())
     print(experiment_results[dataset_name]['all_model_results'])
 
-
+    return f"results on: {output_path}"
 
 
 def test_metrics():
@@ -102,3 +102,5 @@ def test_metrics():
 
     plt.savefig(file_path, dpi=300)
     plt.close()
+
+    return f"results on: {output_path}{dataset_name}/"

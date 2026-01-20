@@ -44,3 +44,4 @@ def analyze():
             dataset_name,
             'src/eda/figures/feature_importance/',
             )
+    return 'results on src/eda/figures/'
