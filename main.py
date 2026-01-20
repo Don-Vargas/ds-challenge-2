@@ -1,7 +1,6 @@
 import pandas as pd
 from fastapi import FastAPI, BackgroundTasks
-from src.drift.simulation.simulate_concept_drift import concept_drift_simulation
-from api.schemas import TrainingRequest, DriftRequest, DriftResponse
+from api.schemas import TrainingRequest
 from api.analyze import run_analysis
 from api.model_metrics import run_model_metrics
 from api.training_mode import start_training
