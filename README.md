@@ -193,10 +193,10 @@ The model demonstrates strong predictive performance with high discrimination be
 Gradient Boosting is the top-performing model, achieving the highest ROC-AUC and robust generalization, making it the recommended choice for production.
 
 ## Run local
-
-API: 
-`uvicorn main:app --reload`
-`http://127.0.0.1:8000/docs`
-Streamlit: 
-`streamlit run streamlit_app/app.py`
-`http://localhost:8501`
+run individual terminals:
+  - API: 
+    `uvicorn main:app --reload`
+    `http://127.0.0.1:8000/docs`
+  - Streamlit: 
+    `streamlit run streamlit_app/app.py`
+    `http://localhost:8501`

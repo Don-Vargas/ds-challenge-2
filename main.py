@@ -51,21 +51,3 @@ def training(
 def inference(background_tasks: BackgroundTasks):
     background_tasks.add_task(start_inference)
     return {"status": "inference started"}
-
-
-@app.post("/simulate-drift", response_model=DriftResponse)
-def simulate_drift(request: DriftRequest):
-
-    reference_df, drifted_df, drift_results = concept_drift_simulation(
-        file_path=request.file_path,
-        features=request.features,
-        target=request.target,
-        alpha=request.alpha,
-        return_data=True
-    )
-
-    return {
-        "drift_results": drift_results.to_dict(orient="records"),
-        "reference_data": reference_df.to_dict(orient="records"),
-        "drifted_data": drifted_df.to_dict(orient="records"),
-    }
