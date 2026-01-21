@@ -53,59 +53,63 @@ if simulate_button:
 
                 # Step 2: Feature distributions overlap
                 st.subheader("Step 2: Feature Distributions Comparison")
-                for feature in drifted_data.columns:
-                    if feature == "target":
-                        continue  # skip target for now
-                    
-                    st.markdown(f"**Feature: {feature}**")
-                    
-                    df_original = pd.DataFrame(data["df"])
-                    pre_probs = df_original[feature].value_counts(normalize=True)
-                    post_probs = drifted_data[feature].value_counts(normalize=True)
-                    
-                    categories = list(set(pre_probs.index).union(post_probs.index))
-                    pre_probs = np.array([pre_probs.get(cat, 0) for cat in categories])
-                    post_probs = np.array([post_probs.get(cat, 0) for cat in categories])
-                    
-                    fig, ax = plt.subplots(figsize=(6, 3))
-                    x = np.arange(len(categories))
-                    width = 0.35
-                    ax.bar(x - width/2, pre_probs, width, label="Original", color="blue", alpha=bar_alpha)
-                    ax.bar(x + width/2, post_probs, width, label="Drifted", color="red", alpha=bar_alpha)
-                    ax.set_xticks(x)
-                    ax.set_xticklabels(categories, rotation=45, ha="right")
-                    ax.set_ylabel("Probability")
-                    ax.set_ylim(0, max(max(pre_probs), max(post_probs)) * 1.1)
-                    ax.legend()
-                    st.pyplot(fig)
+
+                columns_per_row = 2  # Number of columns per row
+                features = [f for f in drifted_data.columns if f != "target"]
+
+                for i in range(0, len(features), columns_per_row):
+                    cols = st.columns(columns_per_row)
+                    for j, feature in enumerate(features[i:i+columns_per_row]):
+                        with cols[j]:
+                            st.markdown(f"**Feature: {feature}**")
+                            df_original = pd.DataFrame(data["df"])
+                            pre_probs = df_original[feature].value_counts(normalize=True)
+                            post_probs = drifted_data[feature].value_counts(normalize=True)
+
+                            categories = list(set(pre_probs.index).union(post_probs.index))
+                            pre_probs = np.array([pre_probs.get(cat, 0) for cat in categories])
+                            post_probs = np.array([post_probs.get(cat, 0) for cat in categories])
+
+                            fig, ax = plt.subplots(figsize=(6, 3))
+                            x = np.arange(len(categories))
+                            width = 0.35
+                            ax.bar(x - width/2, pre_probs, width, label="Original", color="blue", alpha=bar_alpha)
+                            ax.bar(x + width/2, post_probs, width, label="Drifted", color="red", alpha=bar_alpha)
+                            ax.set_xticks(x)
+                            ax.set_xticklabels(categories, rotation=45, ha="right")
+                            ax.set_ylabel("Probability")
+                            ax.set_ylim(0, max(max(pre_probs), max(post_probs)) * 1.1)
+                            ax.legend()
+                            st.pyplot(fig)
 
                 # Step 3: Target probabilities per feature
                 st.subheader("Step 3: Target Probabilities per Feature")
-                for feature in drifted_data.columns:
-                    if feature == "target":
-                        continue
-                    
-                    st.markdown(f"**Feature: {feature}**")
-                    df_original = pd.DataFrame(data["df"])
-                    
-                    pre_target_probs = df_original.groupby(feature)["target"].mean()
-                    post_target_probs = drifted_data.groupby(feature)["target"].mean()
-                    
-                    categories = list(set(pre_target_probs.index).union(post_target_probs.index))
-                    pre_probs = np.array([pre_target_probs.get(cat, 0) for cat in categories])
-                    post_probs = np.array([post_target_probs.get(cat, 0) for cat in categories])
-                    
-                    fig, ax = plt.subplots(figsize=(6, 3))
-                    x = np.arange(len(categories))
-                    width = 0.35
-                    ax.bar(x - width/2, pre_probs, width, label="Original", color="green", alpha=bar_alpha)
-                    ax.bar(x + width/2, post_probs, width, label="Drifted", color="orange", alpha=bar_alpha)
-                    ax.set_xticks(x)
-                    ax.set_xticklabels(categories, rotation=45, ha="right")
-                    ax.set_ylabel("Target Probability")
-                    ax.set_ylim(0, 1)
-                    ax.legend()
-                    st.pyplot(fig)
+
+                for i in range(0, len(features), columns_per_row):
+                    cols = st.columns(columns_per_row)
+                    for j, feature in enumerate(features[i:i+columns_per_row]):
+                        with cols[j]:
+                            st.markdown(f"**Feature: {feature}**")
+                            df_original = pd.DataFrame(data["df"])
+
+                            pre_target_probs = df_original.groupby(feature)["target"].mean()
+                            post_target_probs = drifted_data.groupby(feature)["target"].mean()
+
+                            categories = list(set(pre_target_probs.index).union(post_target_probs.index))
+                            pre_probs = np.array([pre_target_probs.get(cat, 0) for cat in categories])
+                            post_probs = np.array([post_target_probs.get(cat, 0) for cat in categories])
+
+                            fig, ax = plt.subplots(figsize=(6, 3))
+                            x = np.arange(len(categories))
+                            width = 0.35
+                            ax.bar(x - width/2, pre_probs, width, label="Original", color="green", alpha=bar_alpha)
+                            ax.bar(x + width/2, post_probs, width, label="Drifted", color="orange", alpha=bar_alpha)
+                            ax.set_xticks(x)
+                            ax.set_xticklabels(categories, rotation=45, ha="right")
+                            ax.set_ylabel("Target Probability")
+                            ax.set_ylim(0, 1)
+                            ax.legend()
+                            st.pyplot(fig)
 
         except Exception as e:
             st.error(f"Unexpected error: {e}")
