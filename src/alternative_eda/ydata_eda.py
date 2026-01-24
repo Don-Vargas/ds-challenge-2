@@ -37,17 +37,17 @@ def run_eda():
     with mlflow.start_run(run_name=f"EDA_{version}"):
         # Combined analysis
         combined_report = save_profile_report(df, output_dir, "eda_combined")
-        mlflow.log_artifact(combined_report, artifact_path="eda_reports")
+        mlflow.log_artifact(combined_report, name="eda_reports")
 
         # Target=0 analysis
         df_0 = df[df["target"] == 0].copy()
         report_0 = save_profile_report(df_0, output_dir, "eda_target_0")
-        mlflow.log_artifact(report_0, artifact_path="eda_reports")
+        mlflow.log_artifact(report_0, name="eda_reports")
 
         # Target=1 analysis
         df_1 = df[df["target"] == 1].copy()
         report_1 = save_profile_report(df_1, output_dir, "eda_target_1")
-        mlflow.log_artifact(report_1, artifact_path="eda_reports")
+        mlflow.log_artifact(report_1, name="eda_reports")
 
         # Log dataset info
         mlflow.log_param("dataset_rows", df.shape[0])

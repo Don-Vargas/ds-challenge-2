@@ -3,7 +3,7 @@ import numpy as np
 from fastapi import FastAPI, BackgroundTasks, Query
 from api.schemas import TrainingRequest
 from api.analyze import run_analysis
-from api.model_metrics import run_model_metrics
+from api.model_metrics import run_model_metrics, run_all_model_metrics
 from api.training_mode import start_training
 from api.inference_mode import start_inference
 from src.drift.concept_drift import simulate_drift_auto
@@ -26,9 +26,19 @@ def analyze():
     }
 
 
-@app.post("/model-metrics")
+@app.post("/best_model-metrics")
 def model_metrics_endpoint():
     return run_model_metrics()
+
+
+@app.post("/all_model-metrics")
+def all_model_metrics_endpoint(
+    version: str = Query(..., description="Model version to use"),
+    *,
+    background_tasks: BackgroundTasks,
+):
+    background_tasks.add_task(run_all_model_metrics, version)
+    return {"status": "all model metrics saved", "version": version}
 
 
 @app.post("/training")
@@ -50,9 +60,13 @@ def training(
 
 
 @app.post("/inference")
-def inference(background_tasks: BackgroundTasks):
-    background_tasks.add_task(start_inference)
-    return {"status": "inference started"}
+def inference(
+    version: str = Query(..., description="Model version to use"),
+    *,
+    background_tasks: BackgroundTasks,
+):
+    background_tasks.add_task(start_inference, version)
+    return {"status": "inference started", "version": version}
 
 def clean_dict(d):
     """

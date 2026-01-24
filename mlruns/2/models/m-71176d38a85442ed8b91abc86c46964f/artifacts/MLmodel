@@ -1,0 +1,22 @@
+artifact_path: /Users/hector_playground/repos/ds-challenge-2/mlruns/2/models/m-71176d38a85442ed8b91abc86c46964f/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.13.4
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.7.2
+mlflow_version: 3.8.1
+model_id: m-71176d38a85442ed8b91abc86c46964f
+model_size_bytes: 9600894
+model_uuid: m-71176d38a85442ed8b91abc86c46964f
+prompts: null
+run_id: 4dc9dfe03ea74e6d9190219f2ef59dc6
+utc_time_created: '2026-01-23 22:35:21.209709'
