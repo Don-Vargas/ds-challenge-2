@@ -200,3 +200,5 @@ run individual terminals:
   - Streamlit: 
     `streamlit run streamlit_app/app.py`
     `http://localhost:8501`
+  - MLFlow:
+    `mlflow ui --port 5000`
