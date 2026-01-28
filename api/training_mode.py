@@ -10,6 +10,8 @@ from config.staging import (
 )
 from config.research import (
     RAW_DATA,
+    CURRENT_DATA,
+    REFERENCE_DATA,
     TRAIN_DATA,
     TEST_DATA,
     SPLIT_SIZE,
@@ -25,9 +27,19 @@ from src.research import data_split
 def starter(run_split: bool = False, test_size: float = SPLIT_SIZE) -> None:
     if not run_split:
         return
-
+    
+    # Data split for current reference
     data_split.split_and_save_datasets(
         RAW_DATA,
+        REFERENCE_DATA,
+        CURRENT_DATA,
+        test_size=test_size,
+        random_state=42,
+    )
+
+    # Data split for training test
+    data_split.split_and_save_datasets(
+        REFERENCE_DATA,
         TRAIN_DATA,
         TEST_DATA,
         test_size=test_size,

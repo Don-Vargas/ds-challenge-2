@@ -202,3 +202,4 @@ run individual terminals:
     `http://localhost:8501`
   - MLFlow:
     `mlflow ui --port 5000`
+    `http://127.0.0.1:5000`

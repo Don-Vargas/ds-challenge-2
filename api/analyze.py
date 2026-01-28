@@ -1,7 +1,7 @@
 import matplotlib
-matplotlib.use("Agg")  # 👈 IMPORTANT
+matplotlib.use("Agg")
 
 from src.eda import eda_plots_analisys
 
-def run_analysis():
-    return eda_plots_analisys.analyze()
+def run_analysis(version):
+    return eda_plots_analisys.analyze_all(version)

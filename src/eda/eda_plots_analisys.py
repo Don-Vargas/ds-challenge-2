@@ -12,11 +12,10 @@ from src.research import (
 )
 
 
-def analyze():
+def analyze_all(version = 'v1'):
     # ------------------------------------------------------------------
     # Data ingestion
     # ------------------------------------------------------------------
-    version = 'v1'
     all_rankings_file = f'training_parameter_results/{version}/all_rankings.pkl'
     all_rankings = load_pickle(all_rankings_file)
     ds = load_pickle('src/eda/eda_ds_dictionary.pkl')

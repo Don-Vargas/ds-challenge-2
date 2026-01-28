@@ -88,9 +88,8 @@ def load_experiment_results(version='v1'):
 # -------------------------
 # Endpoint: model_keys
 # -------------------------
-def model_keys():
-    experiment_results, output_path = load_experiment_results('v1')
-    dataset_name = 'ds4'
+def model_keys(version, dataset_name):
+    experiment_results, output_path = load_experiment_results(version)
 
     print("Top-level keys:", experiment_results.keys())
     print(f"Keys for dataset {dataset_name}:", experiment_results[dataset_name].keys())
@@ -102,9 +101,8 @@ def model_keys():
 # -------------------------
 # Endpoint: test_metrics
 # -------------------------
-def test_metrics():
-    experiment_results, output_path = load_experiment_results('v1')
-    dataset_name = 'ds4'
+def test_metrics(version, dataset_name):
+    experiment_results, output_path = load_experiment_results(version)
 
     y_test, y_test_proba = experiment_results[dataset_name]['y_test_proba']
     y_pred, metrics = compute_classification_metrics(y_test, y_test_proba)

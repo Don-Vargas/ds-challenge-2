@@ -7,7 +7,6 @@ from api.model_metrics import run_model_metrics, run_all_model_metrics
 from api.training_mode import start_training
 from api.inference_mode import start_inference
 from src.drift.concept_drift import simulate_drift_auto
-from fastapi.encoders import jsonable_encoder
 
 
 app = FastAPI()
@@ -18,8 +17,8 @@ def read_root():
 
 
 @app.post("/analyze")
-def analyze():
-    result = run_analysis()
+def analyze_endpoint(version: str = "v1"):
+    result = run_analysis(version)
     return {
         "status": "success",
         "result": result
@@ -27,8 +26,11 @@ def analyze():
 
 
 @app.post("/best_model-metrics")
-def model_metrics_endpoint():
-    return run_model_metrics()
+def model_metrics_endpoint(
+    version: str = Query("v1", description="Model version to use"),
+    dataset_name: str = Query("ds4", description="Dataset name"),
+):
+    return run_model_metrics(version=version, dataset_name=dataset_name)
 
 
 @app.post("/all_model-metrics")
@@ -38,7 +40,10 @@ def all_model_metrics_endpoint(
     background_tasks: BackgroundTasks,
 ):
     background_tasks.add_task(run_all_model_metrics, version)
-    return {"status": "all model metrics saved", "version": version}
+    return {
+        "status": "all model metrics saved",
+        "version": version,
+    }
 
 
 @app.post("/training")

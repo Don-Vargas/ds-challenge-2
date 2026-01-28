@@ -1,6 +1,8 @@
 import logging
 import pandas as pd
 import mlflow
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 from src.utils.storage import ingest_data, load_pickle, path_validate
 from src.modeling.modeling import EXPERIMENT_NAME
@@ -36,6 +38,39 @@ def _validate_data(
             nan_rows.index.tolist(),
         )
 
+def _plot_prediction_distributions(
+    df: pd.DataFrame,
+    target_col: str,
+    output_path: str,
+) -> None:
+    """
+    Plot overlapped distributions of predicted probabilities
+    for true class 0 vs 1.
+    """
+    plt.figure(figsize=(8, 5))
+
+    sns.kdeplot(
+        df[df[target_col] == 0]["prediction"],
+        label="Class 0",
+        fill=True,
+        alpha=0.4,
+    )
+    sns.kdeplot(
+        df[df[target_col] == 1]["prediction"],
+        label="Class 1",
+        fill=True,
+        alpha=0.4,
+    )
+
+    plt.title("Predicted Probability Distribution by True Class")
+    plt.xlabel("Predicted Probability (Positive Class)")
+    plt.ylabel("Density")
+    plt.legend()
+    plt.tight_layout()
+
+    path_validate(output_path)
+    plt.savefig(output_path)
+    plt.close()
 
 def _build_binary_classification_frames(
     X: pd.DataFrame,
@@ -141,6 +176,21 @@ def run_evidently_binary_classification(
             model=model,
             target_col=target_col,
         )
+        
+        # ----------------------------------------------------------
+        # Prediction distribution plot (0 vs 1)
+        # ----------------------------------------------------------
+        dist_plot_path = (
+            f"{artifacts_dir}prediction_distribution_{version}_{dataset_name}.png"
+        )
+
+        _plot_prediction_distributions(
+            df=test_df,
+            target_col=target_col,
+            output_path=dist_plot_path,
+        )
+
+        mlflow.log_artifact(dist_plot_path, artifact_path="figures")
 
         # ----------------------------------------------------------
         # Evidently report (binary-only)
