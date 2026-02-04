@@ -1,5 +1,3 @@
-from typing import List, Tuple
-
 import src.preprocessing.pre_processing as pre_processing
 import src.modeling.modeling as modeling
 
@@ -13,9 +11,9 @@ from config.research import (
 
 
 def start_inference(version: str = "v1",
+    selected_ds: str ="ds4",
     threshold: float = 0.5,
     ):
-    selected_ds = "ds4"
     results_path = MODEL_PARAMETER_RESULTS
 
     pre_processing.preprocessing_inference_pipeline(

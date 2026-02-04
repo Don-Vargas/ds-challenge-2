@@ -19,7 +19,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler("preprocessing_pipeline.log"),
+        #logging.FileHandler("preprocessing_pipeline.log"),
         logging.StreamHandler()
     ]
 )
@@ -130,7 +130,7 @@ def preprocessing_pipeline(data_path, results_path, version='last_version',
     # Export dataset for data analysis and visualization
     # ------------------------------------------------------------------
     export_eda_data = {'features': X, 'player_id': player_id, 'target': y}
-    save_pickle(export_eda_data, 'src/eda/eda_feature_engineered.pkl')
+    save_pickle(export_eda_data, f'src/eda/{role}/{version}/eda_feature_engineered.pkl')
 
     # ------------------------------------------------------------------
     # Dataset initialization
@@ -179,7 +179,7 @@ def preprocessing_pipeline(data_path, results_path, version='last_version',
     # ------------------------------------------------------------------
     # Export dataset for data analysis and visualization
     # ------------------------------------------------------------------
-    save_pickle(ds, 'src/eda/eda_ds_dictionary.pkl')
+    save_pickle(ds, f'src/eda/{role}/{version}/eda_ds_dictionary.pkl')
 
     # ------------------------------------------------------------------
     # Dataset building

@@ -1,35 +1,10 @@
 from src.utils.storage import ingest_data
+from config.research import CURRENT_DATA
+import src.preprocessing.pre_processing as pre_processing
 import pandas as pd
 import numpy as np
-
-# --------------------------
-# Step 0: Generate drift dictionaries
-# --------------------------
-def generate_drift_dicts(df, target_column='target', feature_columns=None):
-    """
-    Generate feature_drift and target_drift dictionaries for a dataframe.
-    """
-    if feature_columns is None:
-        feature_columns = [c for c in df.columns if c != target_column]
-    
-    feature_drift = {}
-    target_drift = {}
-    
-    for col in feature_columns:
-        # Feature distribution (normalized counts)
-        feature_drift[col] = df[col].value_counts(normalize=True).to_dict()
-        
-        # Target probability per category
-        target_drift[col] = df.groupby(col)[target_column].mean().to_dict()
-    
-    return feature_drift, target_drift
-
-# --------------------------
-# Step 1: Simulate concept drift
-# --------------------------
-import pandas as pd
-import numpy as np
-from src.utils.storage import ingest_data
+from datetime import datetime, timezone
+import mlflow
 from typing import List, Optional, Tuple, Dict
 
 # --------------------------
@@ -45,10 +20,10 @@ def generate_drift_dicts(
     """
     if feature_columns is None:
         feature_columns = [c for c in df.columns if c != target_column]
-    
+
     feature_drift = {}
     target_drift = {}
-    
+
     for col in feature_columns:
         # Feature distribution (normalized counts)
         feature_drift[col] = df[col].value_counts(normalize=True).to_dict()
@@ -61,12 +36,27 @@ def generate_drift_dicts(
 # --------------------------
 # Simulate concept drift
 # --------------------------
-def simulate_drift_auto(df_path, target_column='target', feature_columns=None, random_state=42):
+def simulate_drift_auto(
+        df_path, version='v1', 
+        selected_ds='ds4', 
+        feature_columns=None, 
+        target_column='target', 
+        random_state=42,
+        ):
+
+    pre_processing.preprocessing_inference_pipeline(
+        CURRENT_DATA,
+        df_path,
+        version,
+        selected_ds,
+    )
     # Load data
-    X, y = ingest_data(df_path, index_col='row_id', target_col=target_column)
+    _, target = ingest_data(CURRENT_DATA, index_col='row_id', target_col=target_column)
+    df_path = df_path + 'inference/ds4.csv'
+    X, _ = ingest_data(df_path, index_col='row_id')
     
     # Combine X and y to single DataFrame
-    df = pd.concat([X, y], axis=1)
+    df = pd.concat([X, target], axis=1)
     
     np.random.seed(random_state)
     

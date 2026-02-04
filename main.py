@@ -1,4 +1,3 @@
-import pandas as pd
 import numpy as np
 from fastapi import FastAPI, BackgroundTasks, Query
 from api.schemas import TrainingRequest
@@ -7,6 +6,8 @@ from api.model_metrics import run_model_metrics, run_all_model_metrics
 from api.training_mode import start_training
 from api.inference_mode import start_inference
 from src.drift.concept_drift import simulate_drift_auto
+from fastapi.responses import JSONResponse
+
 
 
 app = FastAPI()
@@ -66,12 +67,24 @@ def training(
 
 @app.post("/inference")
 def inference(
-    version: str = Query(..., description="Model version to use"),
-    *,
-    background_tasks: BackgroundTasks,
+    version: str = Query("v1", description="Model version to use"),
+    selected_ds: str = Query("ds4", description="Dataset to use for inference"),
+    threshold: float = Query(0.5, ge=0.0, le=1.0, description="Decision threshold"),
+    background_tasks: BackgroundTasks = None,
 ):
-    background_tasks.add_task(start_inference, version)
-    return {"status": "inference started", "version": version}
+    background_tasks.add_task(
+        start_inference,
+        version,
+        selected_ds,
+        threshold,
+    )
+
+    return {
+        "status": "inference started",
+        "version": version,
+        "selected_ds": selected_ds,
+        "threshold": threshold,
+    }
 
 def clean_dict(d):
     """
@@ -94,27 +107,30 @@ def clean_dict(d):
     return clean
 
 @app.post("/simulate-drift-file")
-def simulate_drift_file(file_path: str):
+def simulate_drift_file(
+    file_path: str = Query("current_inference/", description="Path for inference data"),
+    version: str = Query("v1", description="Model version"),
+    selected_ds: str = Query("ds4", description="Dataset"),
+):
     try:
-        df, df_drifted, feature_drift_dict, target_drift_dict = simulate_drift_auto(df_path=file_path)
-        
-        # Make numeric columns finite and fill NaN
-        df = df.replace([np.inf, -np.inf], 0).fillna(0)
-        df_drifted = df_drifted.replace([np.inf, -np.inf], 0).fillna(0)
-        
-        feature_drift_dict = clean_dict(feature_drift_dict)
-        target_drift_dict = clean_dict(target_drift_dict)
-        
-        response = {
+        # Run the drift simulation
+        original_df, drifted_df, feature_drift_dict, target_drift_dict = simulate_drift_auto(
+            df_path=file_path,
+            version=version,
+            selected_ds=selected_ds,
+        )
+
+        # Optionally, you can convert dataframes to JSON if you want to return them
+        return {
             "status": "success",
-            "df": df.to_dict(orient='records'),
-            "drifted_data": df_drifted.to_dict(orient='records'),
+            "original_data_shape": original_df.shape,
+            "drifted_data_shape": drifted_df.shape,
             "feature_drift": feature_drift_dict,
-            "target_drift": target_drift_dict
+            "target_drift": target_drift_dict,
         }
-        return response
-        
+
     except FileNotFoundError:
-        return {"status": "error", "message": f"File not found: {file_path}"}
+        return JSONResponse(status_code=404, content={"status": "error", "message": f"File not found: {file_path}"})
+
     except Exception as e:
-        return {"status": "error", "message": str(e)}
+        return JSONResponse(status_code=500, content={"status": "error", "message": str(e)})
