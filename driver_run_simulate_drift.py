@@ -22,7 +22,7 @@ if data["status"] == "success":
         target_drift_pre=data["target_drift_pre"],
         target_drift_post=data["target_drift_post"],
         base_path="src/drift/drift_results",
-        run_name="simulate_drift_run"
+        experiment_name="drift_experiment"
     )
     print("Drift logged and plots generated!")
 else:

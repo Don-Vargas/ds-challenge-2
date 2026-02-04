@@ -46,7 +46,8 @@ def plot_overlap(pre_dict, post_dict, ylabel, kind, plot_dir, kl_dict=None):
 def save_and_log_drift(
     feature_drift_pre, feature_drift_post,
     target_drift_pre, target_drift_post,
-    base_path="drift_results", run_name="simulate_drift_run"
+    base_path="drift_results", 
+    experiment_name="drift_experiment",
 ):
     # Ensure base directory exists
     path_validate(base_path)
@@ -67,9 +68,6 @@ def save_and_log_drift(
             json.dump(d, f, indent=4)
 
     # --- 2. Compute KL divergence ---
-    kl_feature = {}
-    kl_target = {}
-
     kl_feature = compute_kl(feature_drift_pre, feature_drift_post)
     kl_target = compute_kl(target_drift_pre, target_drift_post)
 
@@ -83,8 +81,11 @@ def save_and_log_drift(
     plot_overlap(feature_drift_pre, feature_drift_post, ylabel="Probability", kind="feature", plot_dir=plot_dir, kl_dict=kl_feature)
     plot_overlap(target_drift_pre, target_drift_post, ylabel="Target Probability", kind="target", plot_dir=plot_dir, kl_dict=kl_target)
 
-    # --- 4. Log everything to MLflow ---
-    with mlflow.start_run(run_name=run_name):
+    # --- 4. Log everything to MLflow under a new experiment ---
+    # Create experiment if it doesn't exist
+    experiment_id = mlflow.create_experiment(experiment_name)
+
+    with mlflow.start_run(experiment_id=experiment_id, run_name="drift_run"):
         # Pickles
         for f in ["feature_drift_pre.pkl","feature_drift_post.pkl","target_drift_pre.pkl","target_drift_post.pkl"]:
             mlflow.log_artifact(f"{base_path}/{f}")
