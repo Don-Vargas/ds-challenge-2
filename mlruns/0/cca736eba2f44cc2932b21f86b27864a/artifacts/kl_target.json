@@ -1,0 +1,8 @@
+{
+    "efficiency_binning_quantile": 0.5035279445380398,
+    "eff_times_minutes_binning_quantile": 0.3279756905988386,
+    "scoring_impact_binning_quantile": 0.28839656395830093,
+    "eff_per_point_binning_quantile": 0.0525283015856342,
+    "eff_per_min_binning_quantile": 0.10821905796596881,
+    "scoring_volume_binning_quantile": 0.0016053927639571542
+}

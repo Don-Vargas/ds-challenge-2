@@ -52,10 +52,10 @@ def simulate_drift_auto(
     )
     # Load data
     _, target = ingest_data(CURRENT_DATA, index_col='row_id', target_col=target_column)
-    df_path = df_path + 'inference/ds4.csv'
+    df_path = f"{df_path}inference/{selected_ds}.csv"
     X, _ = ingest_data(df_path, index_col='row_id')
     
-    # Combine X and y to single DataFrame
+    # Combine X and y
     df = pd.concat([X, target], axis=1)
     
     np.random.seed(random_state)
@@ -69,17 +69,19 @@ def simulate_drift_auto(
     df_pre = df.iloc[:split_idx].copy()
     df_post = df.iloc[split_idx:].copy()
     
-    # Generate drift dicts
-    feature_drift_dict, target_drift_dict = generate_drift_dicts(df_pre, target_column, feature_columns)
+    # Generate reference (pre-drift) dicts
+    feature_drift_pre, target_drift_pre = generate_drift_dicts(df_pre, target_column, feature_columns)
     
     # Apply drift to second half
     for col in feature_columns:
-        categories = list(feature_drift_dict[col].keys())
-        probs = list(feature_drift_dict[col].values())
+        categories = list(feature_drift_pre[col].keys())
+        probs = list(feature_drift_pre[col].values())
         df_post[col] = np.random.choice(categories, size=len(df_post), p=probs)
-        df_post[target_column] = df_post[col].apply(lambda x: int(np.random.rand() < target_drift_dict[col][x]))
+        df_post[target_column] = df_post[col].apply(lambda x: int(np.random.rand() < target_drift_pre[col][x]))
+    
+    # Generate current (post-drift) dicts
+    feature_drift_post, target_drift_post = generate_drift_dicts(df_post, target_column, feature_columns)
     
     df_drifted = pd.concat([df_pre, df_post]).reset_index(drop=True)
     
-    
-    return df, df_drifted, feature_drift_dict, target_drift_dict
+    return df, df_drifted, feature_drift_pre, feature_drift_post, target_drift_pre, target_drift_post

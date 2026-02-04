@@ -113,20 +113,20 @@ def simulate_drift_file(
     selected_ds: str = Query("ds4", description="Dataset"),
 ):
     try:
-        # Run the drift simulation
-        original_df, drifted_df, feature_drift_dict, target_drift_dict = simulate_drift_auto(
+        original_df, drifted_df, feature_drift_pre, feature_drift_post, target_drift_pre, target_drift_post = simulate_drift_auto(
             df_path=file_path,
             version=version,
             selected_ds=selected_ds,
         )
 
-        # Optionally, you can convert dataframes to JSON if you want to return them
         return {
             "status": "success",
             "original_data_shape": original_df.shape,
             "drifted_data_shape": drifted_df.shape,
-            "feature_drift": feature_drift_dict,
-            "target_drift": target_drift_dict,
+            "feature_drift_pre": feature_drift_pre,
+            "feature_drift_post": feature_drift_post,
+            "target_drift_pre": target_drift_pre,
+            "target_drift_post": target_drift_post,
         }
 
     except FileNotFoundError:
